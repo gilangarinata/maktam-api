@@ -14,9 +14,15 @@ class Welcome extends REST_Controller {
 	public function index_get()
 	{
 		$date = $this->get('date');
-		$this->db->where('date', $date);
-		$kontak = $this->db->get('inventory_expense')->result();
-        $this->response($kontak, 200);
+		$id = $this->get('id');
+		if($id != ''){
+			$this->db->delete('inventory_expense', array('id' => $id));
+			$this->response("success", 200);
+		}else{
+			$this->db->where('date', $date);
+			$kontak = $this->db->get('inventory_expense')->result();
+			$this->response($kontak, 200);
+		}
 	}
 
 	public function index_post()
@@ -33,12 +39,4 @@ class Welcome extends REST_Controller {
 			$this->response(array('status' => 'fail', 502));
 		}
 	}
-
-	public function index_delete()
-	{
-		$id = $this->get('id');
-		$this->db->delete('inventory_expense', array('id' => $id));
-		$this->response("success", 200);
-	}
-
 }
