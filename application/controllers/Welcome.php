@@ -34,4 +34,16 @@ class Welcome extends REST_Controller {
 		}
 	}
 
+	public function index_delete()
+	{
+		$id = $this->get('id');
+		$this->db->where('id', $id);
+		$kontak = $this->db->delete('inventory_expense');
+		if ($kontak) {
+			$this->response($data, 200);
+		} else {
+			$this->response(array('status' => 'fail', 502));
+		}
+	}
+
 }
