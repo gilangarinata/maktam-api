@@ -1,25 +1,37 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+require APPPATH . '/libraries/REST_Controller.php';
+use Restserver\Libraries\REST_Controller;
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
+class Welcome extends REST_Controller {
+
+    function __construct($config = 'rest') {
+        parent::__construct($config);
+        $this->load->database();
+    }
+
+	public function index_get()
 	{
-		$this->load->view('welcome_message');
+		$date = $this->get('date');
+		$this->db->where('date', $date);
+		$kontak = $this->db->get('inventory_expense')->result();
+        $this->response($kontak, 200);
 	}
+
+	public function index_post()
+	{
+		$data = array(
+			'name'    => $this->post('name'),
+			'total'   => $this->post('total'),
+			'date'    => $this->post('date'),
+		);
+		$insert = $this->db->insert('inventory_expense', $data);
+		if ($insert) {
+			$this->response($data, 200);
+		} else {
+			$this->response(array('status' => 'fail', 502));
+		}
+	}
+
 }
